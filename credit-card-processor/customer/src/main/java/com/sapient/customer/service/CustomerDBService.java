@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -42,6 +44,10 @@ public class CustomerDBService {
 	public Customer updateCustomer(Customer customer) {
 		return this.repository.save(customer);
 	}
+	
+	public void insertTransaction(Transaction transaction) {
+		this.trepo.insert(transaction);
+	}
 
 	public void deleteCustomerById(String id) {
 		this.repository.deleteById(id);
@@ -53,6 +59,11 @@ public class CustomerDBService {
 
 	public boolean isCustomerExists(String email) {
 		return this.repository.existsByEmail(email);
+	}
+	
+	public List<Transaction> findCCByNumberSort(String ccNumber){
+		Sort sort = Sort.by(Sort.Direction.DESC, "transactionAmount");
+		return this.trepo.findByCcNumber(ccNumber, sort);
 	}
 
 	public List<CreditCard> getAllCards(String email) {
@@ -72,7 +83,7 @@ public class CustomerDBService {
 
 	public List<TransactionMiniView> getTransactionByCcNumber(String ccNumber, int number) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "transactionAmount");
-		List<Transaction> allTransactions = this.trepo.findByCcNumber(ccNumber, sort);
+		List<Transaction> allTransactions = trepo.findByCcNumber(ccNumber, sort);
 		List<Transaction> result = new ArrayList<Transaction>();
 		for (Transaction t : allTransactions) {
 			if (t.getTransactionDate().getMonth().compareTo(LocalDate.now().getMonth()) < 0) {
@@ -90,7 +101,7 @@ public class CustomerDBService {
 		return transactions;
 	}
 
-	public HashMap<String, String> getLastMonthMaxTransactionWithMerchant(String ccNumber) {
+	public Map<String, String> getLastMonthMaxTransactionWithMerchant(String ccNumber) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "transactionAmount");
 		List<Transaction> allTransactions = this.trepo.findByCcNumber(ccNumber, sort);
 		Transaction result = null;
@@ -100,7 +111,7 @@ public class CustomerDBService {
 				break;
 			}
 		}
-		HashMap<String, String> map = new HashMap<>();
+		Map<String, String> map = new TreeMap<>();
 		map.put("credit_card", ccNumber);
 		map.put("month", result.getTransactionDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.US));
 		map.put("amount", result.getTransactionAmount().toString());
@@ -108,8 +119,8 @@ public class CustomerDBService {
 		return map;
 	}
 
-	public HashMap<String, String> getLastMonthMaxTransactionWithoutMerchant(String ccNumber) {
-		HashMap<String, String> maxTransaction = getLastMonthMaxTransactionWithMerchant(ccNumber);
+	public Map<String, String> getLastMonthMaxTransactionWithoutMerchant(String ccNumber) {
+		Map<String, String> maxTransaction = getLastMonthMaxTransactionWithMerchant(ccNumber);
 		maxTransaction.remove("merchant");
 		return maxTransaction;
 	}

@@ -3,6 +3,7 @@ package com.sapient.customer.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.websocket.server.PathParam;
 
@@ -85,11 +86,11 @@ public class CustomerController {
 	 * */
 	@GetMapping(path = "/customer/creditcards/lastmonth/max",produces=MediaType.APPLICATION_JSON_VALUE) /// api/customer/creditcards/lastmonth/max
 	//@PreAuthorize("hasRole('ROLE_CUSTOMER')")
-	public List<HashMap<String,String>> getMaxLastMonth() {
+	public List<Map<String,String>> getMaxLastMonth() {
 		List<CreditCard> creditCards = this.service.getAllCards(this.userEmail);
-		List<HashMap<String,String>> ccMaxTransactions = new ArrayList<HashMap<String,String>>();
+		List<Map<String, String>> ccMaxTransactions = new ArrayList<Map<String,String>>();
 		for (CreditCard CC : creditCards) {
-			HashMap<String,String> transactionList = service.getLastMonthMaxTransactionWithoutMerchant(CC.getCreditCardNo());
+			Map<String,String> transactionList = service.getLastMonthMaxTransactionWithoutMerchant(CC.getCreditCardNo());
 			ccMaxTransactions.add(transactionList);
 		}
 		return ccMaxTransactions;
@@ -97,11 +98,11 @@ public class CustomerController {
 	
 	@GetMapping(path = "/customer/creditcards/lastmonth/max_merchant",produces=MediaType.APPLICATION_JSON_VALUE) /// api/customer/creditcards/lastmonth/max
 	//@PreAuthorize("hasRole('ROLE_CUSTOMER')")
-	public List<HashMap<String,String>> getMaxLastMonthMax() {
+	public List<Map<String, String>> getMaxLastMonthMax() {
 		List<CreditCard> creditCards = this.service.getAllCards(this.userEmail);
-		List<HashMap<String,String>> ccMaxTransactions = new ArrayList<HashMap<String,String>>();
+		List<Map<String,String>> ccMaxTransactions = new ArrayList<Map<String,String>>();
 		for (CreditCard CC : creditCards) {
-			HashMap<String,String> transactionList = service.getLastMonthMaxTransactionWithMerchant(CC.getCreditCardNo());
+			Map<String,String> transactionList = service.getLastMonthMaxTransactionWithMerchant(CC.getCreditCardNo());
 			ccMaxTransactions.add(transactionList);
 		}
 		return ccMaxTransactions;

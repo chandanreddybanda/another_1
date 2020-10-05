@@ -56,5 +56,4 @@ public class Customer{
 		this.status = status;
 	}
 	
-	
 }
