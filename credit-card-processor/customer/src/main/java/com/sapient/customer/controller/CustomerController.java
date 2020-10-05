@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sapient.customer.beans.CreditCard;
-import com.sapient.customer.beans.CustomPOJO_A;
-import com.sapient.customer.beans.CustomPOJO_B;
 import com.sapient.customer.beans.Customer;
+import com.sapient.customer.pojo.TransactionMiniView;
+import com.sapient.customer.pojo.TransactionPOJO;
 import com.sapient.customer.service.CustomerDBService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -67,15 +67,15 @@ public class CustomerController {
 	 */
 	@GetMapping(path = "/customer/creditcards/expenses") /// api/customer/creditcards/expenses
 	//@PreAuthorize("hasRole('ROLE_CUSTOMER')")
-	public List<CustomPOJO_A> getLastXnumberOfExpences(@PathParam(value = "") String transactions) {
+	public List<TransactionPOJO> getLastXnumberOfExpences(@PathParam(value = "") String transactions) {
 
 		List<CreditCard> creditCards = this.service.getAllCards(this.userEmail);
-		List<CustomPOJO_A> Lcp = new ArrayList<CustomPOJO_A>();
+		List<TransactionPOJO> ccMaxTransactions = new ArrayList<TransactionPOJO>();
 		for (CreditCard CC : creditCards) {
-			List<CustomPOJO_B> lt = service.getTransactionByCcNumber(CC.getCreditCardNo(), Integer.parseInt(transactions));
-			Lcp.add(new CustomPOJO_A(CC.getCreditCardNo(),lt));
+			List<TransactionMiniView> transactionList = service.getTransactionByCcNumber(CC.getCreditCardNo(), Integer.parseInt(transactions));
+			ccMaxTransactions.add(new TransactionPOJO(CC.getCreditCardNo(),transactionList));
 		}
-		return Lcp;
+		return ccMaxTransactions;
 	}
 	
 	
@@ -87,24 +87,24 @@ public class CustomerController {
 	//@PreAuthorize("hasRole('ROLE_CUSTOMER')")
 	public List<HashMap<String,String>> getMaxLastMonth() {
 		List<CreditCard> creditCards = this.service.getAllCards(this.userEmail);
-		List<HashMap<String,String>> Lcp = new ArrayList<HashMap<String,String>>();
+		List<HashMap<String,String>> ccMaxTransactions = new ArrayList<HashMap<String,String>>();
 		for (CreditCard CC : creditCards) {
-			HashMap<String,String> lt = service.getLastMonthMaxTransactionWithoutMerchant(CC.getCreditCardNo());
-			Lcp.add(lt);
+			HashMap<String,String> transactionList = service.getLastMonthMaxTransactionWithoutMerchant(CC.getCreditCardNo());
+			ccMaxTransactions.add(transactionList);
 		}
-		return Lcp;
+		return ccMaxTransactions;
 	}
 	
 	@GetMapping(path = "/customer/creditcards/lastmonth/max_merchant",produces=MediaType.APPLICATION_JSON_VALUE) /// api/customer/creditcards/lastmonth/max
 	//@PreAuthorize("hasRole('ROLE_CUSTOMER')")
 	public List<HashMap<String,String>> getMaxLastMonthMax() {
 		List<CreditCard> creditCards = this.service.getAllCards(this.userEmail);
-		List<HashMap<String,String>> Lcp = new ArrayList<HashMap<String,String>>();
+		List<HashMap<String,String>> ccMaxTransactions = new ArrayList<HashMap<String,String>>();
 		for (CreditCard CC : creditCards) {
-			HashMap<String,String> lt = service.getLastMonthMaxTransactionWithMerchant(CC.getCreditCardNo());
-			Lcp.add(lt);
+			HashMap<String,String> transactionList = service.getLastMonthMaxTransactionWithMerchant(CC.getCreditCardNo());
+			ccMaxTransactions.add(transactionList);
 		}
-		return Lcp;
+		return ccMaxTransactions;
 	}
 	
 }
